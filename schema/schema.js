@@ -8,7 +8,7 @@ const {
   GraphQLID,
 } = graphql;
 
-import { Recipe, Country } from "../model/index.js";
+import { Recipe, Country, Review } from "../model/index.js";
 
 const RecipeType = new GraphQLObjectType({
   name: "Recipe",
@@ -18,6 +18,37 @@ const RecipeType = new GraphQLObjectType({
     ingredients: { type: GraphQLList(GraphQLString) },
     instructions: { type: GraphQLString },
     country: { type: GraphQLString },
+    reviews: {
+      type: GraphQLList(ReviewType),
+      resolve: (parent) => {
+        return Review.find({ recipeId: parent.id });
+      },
+    },
+  }),
+});
+
+const CountryType = new GraphQLObjectType({
+  name: "Country",
+  fields: () => ({
+    id: { type: GraphQLID },
+    country: { type: GraphQLString },
+    description: { type: GraphQLString },
+    recipes: {
+      type: GraphQLList(RecipeType),
+      resolve: (parent, args) => {
+        return Recipe.find({ country: parent.country });
+      },
+    },
+  }),
+});
+
+const ReviewType = new GraphQLObjectType({
+  name: "Review",
+  fields: () => ({
+    id: { type: GraphQLID },
+    author: { type: GraphQLString },
+    description: { type: GraphQLString },
+    recipeId: { type: GraphQLString },
   }),
 });
 
@@ -37,8 +68,23 @@ const Query = new GraphQLObjectType({
     },
     recipes: {
       type: new GraphQLList(RecipeType),
-      resolve: (parents, args) => {
+      resolve: () => {
         return Recipe.find({});
+      },
+    },
+    countries: {
+      type: GraphQLList(CountryType),
+      resolve: () => {
+        return Country.find({});
+      },
+    },
+    country: {
+      type: CountryType,
+      args: {
+        country: { type: GraphQLString },
+      },
+      resolve: (parent, args) => {
+        return Country.findOne({ country: args.country });
       },
     },
   },
