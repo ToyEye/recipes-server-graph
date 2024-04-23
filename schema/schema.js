@@ -63,7 +63,33 @@ const Mutation = new GraphQLObjectType({
         instructions: { type: GraphQLString },
         country: { type: GraphQLString },
       },
-      resolve: (parent, { name, ingredients, instructions, country }) => {
+      resolve: async (parent, { name, ingredients, instructions, country }) => {
+        const countryExist = await Country.findOne({ country });
+
+        if (!countryExist) {
+          try {
+            const response = await fetch(
+              `https://restcountries.com/v3.1/name/${country}`
+            );
+            if (!response.ok) {
+              return new Error("Error when requesting country");
+            }
+
+            const newCountry = await response.json();
+
+            const modernCountry = newCountry.map(
+              ({ name: { common }, flags }) => ({
+                country: common,
+                flag: flags.png,
+              })
+            );
+
+            await Country.create({ ...modernCountry[0] });
+          } catch (error) {
+            console.log(error.message);
+          }
+        }
+
         const newRecipe = new Recipe({
           name,
           ingredients,

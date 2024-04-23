@@ -7,6 +7,10 @@ const countrySchema = new Schema(
       required: true,
     },
     description: { type: String },
+    flag: {
+      type: String,
+      required: true,
+    },
   },
   { versionKey: false }
 );
