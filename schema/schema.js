@@ -80,7 +80,6 @@ const Mutation = new GraphQLObjectType({
         id: { type: GraphQLID },
       },
       resolve: (parent, { id }) => {
-        console.log(id);
         return Recipe.findByIdAndDelete(id);
       },
     },
@@ -99,6 +98,40 @@ const Mutation = new GraphQLObjectType({
           {
             $set: { name, ingredients, instructions, country },
           },
+          { new: true }
+        );
+      },
+    },
+    addReview: {
+      type: ReviewType,
+      args: {
+        author: { type: GraphQLString },
+        description: { type: GraphQLString },
+        recipeId: { type: GraphQLString },
+      },
+      resolve: (parent, { author, description, recipeId }) => {
+        const newReview = new Review({ author, description, recipeId });
+        return newReview.save();
+      },
+    },
+    deleteReview: {
+      type: ReviewType,
+      args: { id: { type: GraphQLID } },
+      resolve: (_, { id }) => {
+        return Review.findByIdAndDelete(id);
+      },
+    },
+    updateReview: {
+      type: ReviewType,
+      args: {
+        author: { type: GraphQLString },
+        description: { type: GraphQLString },
+        id: { type: GraphQLID },
+      },
+      resolve: (_, { author, description, id }) => {
+        return Review.findByIdAndUpdate(
+          id,
+          { $set: { author, description } },
           { new: true }
         );
       },
