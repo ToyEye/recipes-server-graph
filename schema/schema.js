@@ -52,6 +52,60 @@ const ReviewType = new GraphQLObjectType({
   }),
 });
 
+const Mutation = new GraphQLObjectType({
+  name: "Mutation",
+  fields: {
+    addRecipe: {
+      type: RecipeType,
+      args: {
+        name: { type: GraphQLString },
+        ingredients: { type: GraphQLList(GraphQLString) },
+        instructions: { type: GraphQLString },
+        country: { type: GraphQLString },
+      },
+      resolve: (parent, { name, ingredients, instructions, country }) => {
+        const newRecipe = new Recipe({
+          name,
+          ingredients,
+          instructions,
+          country,
+        });
+
+        return newRecipe.save();
+      },
+    },
+    deleteRecipe: {
+      type: RecipeType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve: (parent, { id }) => {
+        console.log(id);
+        return Recipe.findByIdAndDelete(id);
+      },
+    },
+    updateRecipe: {
+      type: RecipeType,
+      args: {
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        ingredients: { type: GraphQLList(GraphQLString) },
+        instructions: { type: GraphQLString },
+        country: { type: GraphQLString },
+      },
+      resolve: (parent, { id, name, ingredients, instructions, country }) => {
+        return Recipe.findByIdAndUpdate(
+          id,
+          {
+            $set: { name, ingredients, instructions, country },
+          },
+          { new: true }
+        );
+      },
+    },
+  },
+});
+
 const Query = new GraphQLObjectType({
   name: "Query",
   fields: {
@@ -90,4 +144,4 @@ const Query = new GraphQLObjectType({
   },
 });
 
-export default new GraphQLSchema({ query: Query });
+export default new GraphQLSchema({ query: Query, mutation: Mutation });
