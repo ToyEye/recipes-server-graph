@@ -63,7 +63,13 @@ const Mutation = new GraphQLObjectType({
         instructions: { type: GraphQLString },
         country: { type: GraphQLString },
       },
-      resolve: async (parent, { name, ingredients, instructions, country }) => {
+      resolve: async (
+        parent,
+        { name, ingredients, instructions, country },
+        context
+      ) => {
+        if (!context.user) throw new Error("Unauthorized!");
+
         const countryExist = await Country.findOne({ country });
 
         if (!countryExist) {
@@ -105,8 +111,10 @@ const Mutation = new GraphQLObjectType({
       args: {
         id: { type: GraphQLID },
       },
-      resolve: (parent, { id }) => {
-        return Recipe.findByIdAndDelete(id);
+      resolve: (parent, { id }, context) => {
+        if (context.user) return Recipe.findByIdAndDelete(id);
+
+        throw new Error("Unauthorized!");
       },
     },
     updateRecipe: {
@@ -118,7 +126,13 @@ const Mutation = new GraphQLObjectType({
         instructions: { type: GraphQLString },
         country: { type: GraphQLString },
       },
-      resolve: (parent, { id, name, ingredients, instructions, country }) => {
+      resolve: (
+        parent,
+        { id, name, ingredients, instructions, country },
+        context
+      ) => {
+        if (!context.user) throw new Error("Unauthorized!");
+
         return Recipe.findByIdAndUpdate(
           id,
           {
@@ -135,7 +149,9 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         recipeId: { type: GraphQLString },
       },
-      resolve: (parent, { author, description, recipeId }) => {
+      resolve: (parent, { author, description, recipeId }, context) => {
+        if (!context.user) throw new Error("Unauthorized!");
+
         const newReview = new Review({ author, description, recipeId });
         return newReview.save();
       },
@@ -143,7 +159,9 @@ const Mutation = new GraphQLObjectType({
     deleteReview: {
       type: ReviewType,
       args: { id: { type: GraphQLID } },
-      resolve: (_, { id }) => {
+      resolve: (_, { id }, context) => {
+        if (!context.user) throw new Error("Unauthorized!");
+
         return Review.findByIdAndDelete(id);
       },
     },
@@ -154,7 +172,9 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         id: { type: GraphQLID },
       },
-      resolve: (_, { author, description, id }) => {
+      resolve: (_, { author, description, id }, context) => {
+        if (!context.user) throw new Error("Unauthorized!");
+
         return Review.findByIdAndUpdate(
           id,
           { $set: { author, description } },
