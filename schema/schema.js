@@ -9,8 +9,8 @@ const {
   GraphQLBoolean,
 } = graphql;
 
-import { Recipe, Country, Review, User } from "../model/index.js";
-import { getCurrentUser, logout, signin, signup } from "../controllers/user.js";
+import { Recipe, Country, Review } from "../model/index.js";
+import { user, recipe, review, countries } from "../controllers/index.js";
 
 const RecipeType = new GraphQLObjectType({
   name: "Recipe",
@@ -78,59 +78,14 @@ const Mutation = new GraphQLObjectType({
         instructions: { type: GraphQLString },
         country: { type: GraphQLString },
       },
-      resolve: async (
-        parent,
-        { name, ingredients, instructions, country },
-        context
-      ) => {
-        if (!context.user) throw new Error("Unauthorized!");
-
-        const countryExist = await Country.findOne({ country });
-
-        if (!countryExist) {
-          try {
-            const response = await fetch(
-              `https://restcountries.com/v3.1/name/${country}`
-            );
-            if (!response.ok) {
-              return new Error("Error when requesting country");
-            }
-
-            const newCountry = await response.json();
-
-            const modernCountry = newCountry.map(
-              ({ name: { common }, flags }) => ({
-                country: common,
-                flag: flags.png,
-              })
-            );
-
-            await Country.create({ ...modernCountry[0] });
-          } catch (error) {
-            console.log(error.message);
-          }
-        }
-
-        const newRecipe = new Recipe({
-          name,
-          ingredients,
-          instructions,
-          country,
-        });
-
-        return newRecipe.save();
-      },
+      resolve: recipe.addRecipe,
     },
     deleteRecipe: {
       type: RecipeType,
       args: {
         id: { type: GraphQLID },
       },
-      resolve: (parent, { id }, context) => {
-        if (context.user) return Recipe.findByIdAndDelete(id);
-
-        throw new Error("Unauthorized!");
-      },
+      resolve: recipe.deleteRecipe,
     },
     updateRecipe: {
       type: RecipeType,
@@ -141,21 +96,7 @@ const Mutation = new GraphQLObjectType({
         instructions: { type: GraphQLString },
         country: { type: GraphQLString },
       },
-      resolve: (
-        _,
-        { id, name, ingredients, instructions, country },
-        context
-      ) => {
-        if (!context.user) throw new Error("Unauthorized!");
-
-        return Recipe.findByIdAndUpdate(
-          id,
-          {
-            $set: { name, ingredients, instructions, country },
-          },
-          { new: true }
-        );
-      },
+      resolve: recipe.updateRecipe,
     },
     addReview: {
       type: ReviewType,
@@ -164,21 +105,12 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         recipeId: { type: GraphQLString },
       },
-      resolve: (parent, { author, description, recipeId }, context) => {
-        if (!context.user) throw new Error("Unauthorized!");
-
-        const newReview = new Review({ author, description, recipeId });
-        return newReview.save();
-      },
+      resolve: review.addReview,
     },
     deleteReview: {
       type: ReviewType,
       args: { id: { type: GraphQLID } },
-      resolve: (_, { id }, context) => {
-        if (!context.user) throw new Error("Unauthorized!");
-
-        return Review.findByIdAndDelete(id);
-      },
+      resolve: review.deleteReview,
     },
     updateReview: {
       type: ReviewType,
@@ -187,15 +119,7 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         id: { type: GraphQLID },
       },
-      resolve: (_, { author, description, id }, context) => {
-        if (!context.user) throw new Error("Unauthorized!");
-
-        return Review.findByIdAndUpdate(
-          id,
-          { $set: { author, description } },
-          { new: true }
-        );
-      },
+      resolve: review.updateReview,
     },
     signup: {
       type: UserType,
@@ -204,7 +128,7 @@ const Mutation = new GraphQLObjectType({
         email: { type: GraphQLString },
         password: { type: GraphQLString },
       },
-      resolve: signup,
+      resolve: user.signup,
     },
     signin: {
       type: UserType,
@@ -213,11 +137,11 @@ const Mutation = new GraphQLObjectType({
         password: { type: GraphQLString },
       },
 
-      resolve: signin,
+      resolve: user.signin,
     },
     logout: {
       type: UserType,
-      resolve: logout,
+      resolve: user.logout,
     },
   },
 });
@@ -232,20 +156,16 @@ const Query = new GraphQLObjectType({
           type: GraphQLID,
         },
       },
-      resolve: (parent, args) => {
-        return Recipe.findById(args.id);
-      },
+      resolve: recipe.getRecipe,
     },
     recipes: {
       type: new GraphQLList(RecipeType),
-      resolve: () => {
-        return Recipe.find({});
-      },
+      resolve: recipe.getAllRecipes,
     },
     countries: {
       type: GraphQLList(CountryType),
       resolve: () => {
-        return Country.find({});
+        return countries.getCountries;
       },
     },
     country: {
@@ -253,13 +173,11 @@ const Query = new GraphQLObjectType({
       args: {
         country: { type: GraphQLString },
       },
-      resolve: (parent, args) => {
-        return Country.findOne({ country: args.country });
-      },
+      resolve: countries.getCountry,
     },
     current: {
       type: UserType,
-      resolve: getCurrentUser,
+      resolve: user.getCurrentUser,
     },
   },
 });
