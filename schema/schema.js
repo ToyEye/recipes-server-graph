@@ -6,9 +6,11 @@ const {
   GraphQLSchema,
   GraphQLList,
   GraphQLID,
+  GraphQLBoolean,
 } = graphql;
 
-import { Recipe, Country, Review } from "../model/index.js";
+import { Recipe, Country, Review, User } from "../model/index.js";
+import { logout, signin, signup } from "../controllers/user.js";
 
 const RecipeType = new GraphQLObjectType({
   name: "Recipe",
@@ -49,6 +51,19 @@ const ReviewType = new GraphQLObjectType({
     author: { type: GraphQLString },
     description: { type: GraphQLString },
     recipeId: { type: GraphQLString },
+  }),
+});
+
+const UserType = new GraphQLObjectType({
+  name: "User",
+  fields: () => ({
+    id: { type: GraphQLID },
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+    token: { type: GraphQLString },
+    verify: { type: GraphQLBoolean },
+    verifyCode: { type: GraphQLString },
   }),
 });
 
@@ -127,7 +142,7 @@ const Mutation = new GraphQLObjectType({
         country: { type: GraphQLString },
       },
       resolve: (
-        parent,
+        _,
         { id, name, ingredients, instructions, country },
         context
       ) => {
@@ -181,6 +196,28 @@ const Mutation = new GraphQLObjectType({
           { new: true }
         );
       },
+    },
+    signup: {
+      type: UserType,
+      args: {
+        name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+      },
+      resolve: signup,
+    },
+    signin: {
+      type: UserType,
+      args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+      },
+
+      resolve: signin,
+    },
+    logout: {
+      type: UserType,
+      resolve: logout,
     },
   },
 });

@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-
-import { User } from "./model/userModel.js";
+import "dotenv/config";
 
 import { graphqlHTTP } from "express-graphql";
 
