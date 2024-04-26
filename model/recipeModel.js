@@ -16,6 +16,21 @@ const recipeSchema = new Schema(
       type: String,
       required: true,
     },
+    vote_average: {
+      type: Number,
+      default: 0,
+    },
+    vote_count: {
+      type: Number,
+      default: 0,
+    },
+    vote_bank: {
+      vote1: { type: Number, default: 0 },
+      vote2: { type: Number, default: 0 },
+      vote3: { type: Number, default: 0 },
+      vote4: { type: Number, default: 0 },
+      vote5: { type: Number, default: 0 },
+    },
   },
   { versionKey: false }
 );

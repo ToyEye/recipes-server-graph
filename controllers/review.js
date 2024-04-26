@@ -18,9 +18,8 @@ export const addReview = async (
 };
 
 export const deleteReview = async (_, { id }, { user }) => {
-  if (!context.user) throw new Error("Unauthorized!");
-
-  return Review.findOneAndDelete({ id, owner: user._id });
+  if (!user) throw new Error("Unauthorized!");
+  return Review.findOneAndDelete({ _id: id, owner: user._id });
 };
 
 export const updateReview = async (
@@ -31,7 +30,7 @@ export const updateReview = async (
   if (!user) throw new Error("Unauthorized!");
 
   return Review.findByIdAndUpdate(
-    { id, owner: user._id },
+    { _id: id, owner: user._id },
     { $set: { author, description } },
     { new: true }
   );

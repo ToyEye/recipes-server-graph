@@ -6,66 +6,15 @@ const {
   GraphQLSchema,
   GraphQLList,
   GraphQLID,
-  GraphQLBoolean,
 } = graphql;
 
-import { Recipe, Country, Review } from "../model/index.js";
 import { user, recipe, review, countries } from "../controllers/index.js";
-
-const RecipeType = new GraphQLObjectType({
-  name: "Recipe",
-  fields: () => ({
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    ingredients: { type: GraphQLList(GraphQLString) },
-    instructions: { type: GraphQLString },
-    country: { type: GraphQLString },
-    reviews: {
-      type: GraphQLList(ReviewType),
-      resolve: (parent) => {
-        return Review.find({ recipeId: parent.id });
-      },
-    },
-  }),
-});
-
-const CountryType = new GraphQLObjectType({
-  name: "Country",
-  fields: () => ({
-    id: { type: GraphQLID },
-    country: { type: GraphQLString },
-    description: { type: GraphQLString },
-    recipes: {
-      type: GraphQLList(RecipeType),
-      resolve: (parent, args) => {
-        return Recipe.find({ country: parent.country });
-      },
-    },
-  }),
-});
-
-const ReviewType = new GraphQLObjectType({
-  name: "Review",
-  fields: () => ({
-    id: { type: GraphQLID },
-    author: { type: GraphQLString },
-    description: { type: GraphQLString },
-    recipeId: { type: GraphQLString },
-  }),
-});
-
-const UserType = new GraphQLObjectType({
-  name: "User",
-  fields: () => ({
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    email: { type: GraphQLString },
-    password: { type: GraphQLString },
-    token: { type: GraphQLString },
-    verify: { type: GraphQLBoolean },
-    verifyCode: { type: GraphQLString },
-  }),
-});
+import {
+  RecipeType,
+  CountryType,
+  ReviewType,
+  UserType,
+} from "../ghTypes/ghTypes.js";
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -97,6 +46,11 @@ const Mutation = new GraphQLObjectType({
         country: { type: GraphQLString },
       },
       resolve: recipe.updateRecipe,
+    },
+    changeVote: {
+      type: RecipeType,
+      args: { id: { type: GraphQLID }, newVote: { type: GraphQLString } },
+      resolve: recipe.changeVote,
     },
     addReview: {
       type: ReviewType,

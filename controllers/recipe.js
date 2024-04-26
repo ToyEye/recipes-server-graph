@@ -1,3 +1,4 @@
+import { calculateRating } from "../helpers/calculateRating.js";
 import { Recipe, Country } from "../model/index.js";
 
 export const getRecipe = (_, args) => {
@@ -53,7 +54,7 @@ export const addRecipe = async (
 export const deleteRecipe = async (parent, { id }, { user }) => {
   if (!user) throw new Error("Unauthorized!");
 
-  return Recipe.findOneAndDelete({ id, owner: user._id });
+  return Recipe.findOneAndDelete({ _id: id, owner: user._id });
 };
 
 export const updateRecipe = async (
@@ -63,11 +64,26 @@ export const updateRecipe = async (
 ) => {
   if (!user) throw new Error("Unauthorized!");
 
-  return Recipe.findOneAndDelete(
-    { id, owner: user._id },
+  return Recipe.findOneAndUpdate(
+    { _id: id, owner: user._id },
     {
       $set: { name, ingredients, instructions, country },
     },
     { new: true }
   );
+};
+
+export const changeVote = async (_, { id, newVote }) => {
+  const recipe = await Recipe.findById(id, "vote_count vote_bank");
+
+  const newBody = {
+    vote_count: recipe.vote_count + 1,
+    vote_average: calculateRating(recipe.vote_bank),
+    vote_bank: {
+      ...recipe.vote_bank,
+      [newVote]: recipe.vote_bank[newVote] + 1,
+    },
+  };
+  console.log("newBody", newBody);
+  return await Recipe.findByIdAndUpdate(id, newBody);
 };
