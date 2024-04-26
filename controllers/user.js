@@ -61,3 +61,13 @@ export const logout = async (_, args, { user }) => {
 
   return user;
 };
+
+export const getCurrentUser = async (_, args, { user }) => {
+  if (!user) {
+    throw new Error("Unauthorized!");
+  }
+
+  const currentUser = await User.findById(user._id);
+
+  return currentUser;
+};

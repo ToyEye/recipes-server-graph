@@ -10,7 +10,7 @@ const {
 } = graphql;
 
 import { Recipe, Country, Review, User } from "../model/index.js";
-import { logout, signin, signup } from "../controllers/user.js";
+import { getCurrentUser, logout, signin, signup } from "../controllers/user.js";
 
 const RecipeType = new GraphQLObjectType({
   name: "Recipe",
@@ -256,6 +256,10 @@ const Query = new GraphQLObjectType({
       resolve: (parent, args) => {
         return Country.findOne({ country: args.country });
       },
+    },
+    current: {
+      type: UserType,
+      resolve: getCurrentUser,
     },
   },
 });
