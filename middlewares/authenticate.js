@@ -10,6 +10,7 @@ export const authenticate = async (req, res, next) => {
   if (bearer !== "Bearer") {
     req.user = null;
     next();
+    return;
   }
 
   try {
@@ -20,6 +21,7 @@ export const authenticate = async (req, res, next) => {
     if (!user || !user.token || user.token !== token) {
       req.user = null;
       next();
+      return;
     }
 
     req.user = user;

@@ -11,6 +11,9 @@ import { authenticate } from "./middlewares/authenticate.js";
 
 export const app = express();
 
+app.use(cors());
+app.use(express.json());
+
 app.use(
   "/graphql",
   authenticate,
@@ -18,5 +21,3 @@ app.use(
     return { schema, graphiql: true, context: req };
   })
 );
-
-app.use(cors());
