@@ -12,6 +12,14 @@ const recipeSchema = new Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+      default: "A delicious Thai noodle dish with shrimp and peanuts.",
+    },
+    img: {
+      type: String,
+      default: "https://generated.vusercontent.net/placeholder.svg",
+    },
     owner: {
       type: String,
       required: true,

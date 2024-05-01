@@ -87,3 +87,20 @@ export const changeVote = async (_, { id, newVote }) => {
   console.log("newBody", newBody);
   return await Recipe.findByIdAndUpdate(id, newBody);
 };
+
+export const getRandomRecipes = async () => {
+  const recipes = await Recipe.find({});
+
+  if (recipes.length < 3) {
+    return "Массив должен содержать как минимум 3 элемента";
+  }
+
+  let randomElements = [];
+
+  for (let i = 0; i < 3; i++) {
+    let randomIndex = Math.floor(Math.random() * recipes.length);
+    randomElements.push(recipes[randomIndex]);
+  }
+
+  return randomElements;
+};

@@ -42,7 +42,7 @@ export const RecipeType = new GraphQLObjectType({
     ingredients: { type: GraphQLList(GraphQLString) },
     instructions: { type: GraphQLString },
     country: { type: GraphQLString },
-
+    description: { type: GraphQLString },
     vote_average: { type: VoteAverageUnion },
     vote_count: { type: GraphQLInt },
     vote_bank: { type: VoteBankType },

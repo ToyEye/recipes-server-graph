@@ -116,6 +116,10 @@ const Query = new GraphQLObjectType({
       type: new GraphQLList(RecipeType),
       resolve: recipe.getAllRecipes,
     },
+    getRandomRecipes: {
+      type: new GraphQLList(RecipeType),
+      resolve: recipe.getRandomRecipes,
+    },
     countries: {
       type: GraphQLList(CountryType),
       resolve: () => {
