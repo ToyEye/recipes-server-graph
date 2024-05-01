@@ -13,7 +13,7 @@ export const calculateRating = (votes) => {
     return 0;
   }
 
-  const rating = totalScore / totalVotes;
+  const rating = Number((totalScore / totalVotes).toFixed(2));
 
   return rating;
 };
