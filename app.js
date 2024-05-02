@@ -1,9 +1,6 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
-
 import "dotenv/config";
-const { MONGODB } = process.env;
 
 import { graphqlHTTP } from "express-graphql";
 
@@ -24,15 +21,3 @@ app.use(
     return { schema, graphiql: true, context: req };
   })
 );
-
-mongoose
-  .connect(MONGODB)
-  .then(() => {
-    console.log("Mongo on");
-    app.listen(3001, () => {
-      console.log("server on");
-    });
-  })
-  .catch(() => {
-    process.exit(1);
-  });

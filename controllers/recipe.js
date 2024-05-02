@@ -102,5 +102,10 @@ export const getRandomRecipes = async () => {
     randomElements.push(recipes[randomIndex]);
   }
 
+  randomElements = randomElements.filter(
+    (element, index, self) =>
+      index === self.findIndex((t) => t._id === element._id)
+  );
+
   return randomElements;
 };
