@@ -97,15 +97,14 @@ export const getRandomRecipes = async () => {
 
   let randomElements = [];
 
-  for (let i = 0; i < 3; i++) {
-    let randomIndex = Math.floor(Math.random() * recipes.length);
-    randomElements.push(recipes[randomIndex]);
-  }
+  while (randomElements.length < 3) {
+    const randomIndex = Math.floor(Math.random() * recipes.length);
+    const randomRecipe = recipes[randomIndex];
 
-  randomElements = randomElements.filter(
-    (element, index, self) =>
-      index === self.findIndex((t) => t._id === element._id)
-  );
+    if (!randomElements.some((recipe) => recipe._id === randomRecipe._id)) {
+      randomElements.push(randomRecipe);
+    }
+  }
 
   return randomElements;
 };
