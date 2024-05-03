@@ -81,10 +81,10 @@ export const changeVote = async (_, { id, newVote }) => {
     vote_average: calculateRating(recipe.vote_bank),
     vote_bank: {
       ...recipe.vote_bank,
-      [newVote]: recipe.vote_bank[newVote] + 1,
+      ["vote" + newVote]: recipe.vote_bank["vote" + newVote] + 1,
     },
   };
-  console.log("newBody", newBody);
+
   return await Recipe.findByIdAndUpdate(id, newBody);
 };
 
