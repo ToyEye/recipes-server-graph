@@ -1,9 +1,9 @@
 import { Country } from "../model/index.js";
 
-export const getCountry = async () => {
+export const getCountries = async () => {
   return await Country.find({});
 };
 
-export const getCountries = async (_, { country }) => {
-  return Country.findOne({ country: country });
+export const getCountry = async (_, { country }) => {
+  return await Country.findOne({ country: country });
 };
