@@ -122,9 +122,7 @@ const Query = new GraphQLObjectType({
     },
     countries: {
       type: GraphQLList(CountryType),
-      resolve: () => {
-        return countries.getCountries;
-      },
+      resolve: countries.getCountries,
     },
     country: {
       type: CountryType,
