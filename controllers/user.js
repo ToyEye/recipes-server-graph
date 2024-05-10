@@ -7,7 +7,14 @@ import { HttpErrors } from "../helpers/HttpErrors.js";
 
 const { SECRET_KEY } = process.env;
 
-export const signup = async (parent, { name, email, password }) => {
+export const signup = async (
+  parent,
+  { name, email, password, comfirmPassword }
+) => {
+  if (password !== comfirmPassword) {
+    throw HttpErrors(400, "Passwords must match");
+  }
+
   const user = await User.findOne({ email });
 
   if (user) {
