@@ -9,9 +9,9 @@ const { SECRET_KEY } = process.env;
 
 export const signup = async (
   parent,
-  { name, email, password, comfirmPassword }
+  { name, email, password, confirmPassword }
 ) => {
-  if (password !== comfirmPassword) {
+  if (password !== confirmPassword) {
     throw HttpErrors(400, "Passwords must match");
   }
 

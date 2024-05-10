@@ -81,7 +81,7 @@ const Mutation = new GraphQLObjectType({
         name: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString },
-        comfirmPassword: { type: GraphQLString },
+        confirmPassword: { type: GraphQLString },
       },
       resolve: user.signup,
     },
