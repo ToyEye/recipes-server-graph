@@ -89,6 +89,7 @@ export const UserType = new GraphQLObjectType({
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
+    confirmPassword: { type: GraphQLString },
     token: { type: GraphQLString },
     verify: { type: GraphQLBoolean },
     verifyCode: { type: GraphQLString },
